@@ -1,0 +1,8 @@
+{
+  "name": "MobileHub",
+  "description": "A premium, mobile-first local village eCommerce platform for mobile phones, accessories, and recharge services.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
