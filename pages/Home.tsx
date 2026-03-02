@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MOCK_PRODUCTS, MOCK_BANNERS } from '../mockData';
-import { Category } from '../types';
+import { MOCK_BANNERS } from '../mockData';
+import { Category, Product } from '../types';
 import { useGlobal } from '../App';
+import { StorageService } from '../storage';
 
 interface ProductCardProps {
   product: any;
@@ -49,14 +50,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dark = false }) => {
 };
 
 const Home = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    setProducts(StorageService.getProducts());
+  }, []);
+
   const categories = [
     { name: Category.MOBILES, icon: 'fa-mobile-screen-button', color: 'bg-blue-50 text-blue-600', sub: 'Latest Flagships' },
     { name: Category.ACCESSORIES, icon: 'fa-headphones-simple', color: 'bg-purple-50 text-purple-600', sub: 'Original Gear' },
     { name: Category.GADGETS, icon: 'fa-microchip', color: 'bg-indigo-50 text-indigo-600', sub: 'Smart Tech' },
   ];
 
-  const featuredProducts = MOCK_PRODUCTS.filter(p => p.isFeatured);
-  const hotDeals = MOCK_PRODUCTS.filter(p => p.isDeal);
+  const featuredProducts = products.filter(p => p.isFeatured);
+  const hotDeals = products.filter(p => p.isDeal);
 
   return (
     <div className="space-y-16 animate-fade-in pb-12">

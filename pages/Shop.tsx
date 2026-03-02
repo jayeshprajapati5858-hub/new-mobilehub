@@ -1,11 +1,11 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { MOCK_PRODUCTS } from '../mockData';
 import { Category } from '../types';
 // Fixed: Changed useCart to useGlobal
 import { useGlobal } from '../App';
 import { Link } from 'react-router-dom';
+import { StorageService } from '../storage';
 
 // Using React.FC to properly handle special props like 'key' in lists and resolve TS errors
 const ProductGridItem: React.FC<{ product: any }> = ({ product }) => {
@@ -50,13 +50,18 @@ const Shop = () => {
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get('category');
   
+  const [products, setProducts] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'All');
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
 
+  useEffect(() => {
+    setProducts(StorageService.getProducts());
+  }, []);
+
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter(product => {
+    return products.filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
       return matchesSearch && matchesCategory;

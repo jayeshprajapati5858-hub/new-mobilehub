@@ -1,16 +1,22 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { MOCK_PRODUCTS } from '../mockData';
 import { useGlobal } from '../App';
+import { StorageService } from '../storage';
+import { Product } from '../types';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useGlobal();
   const [selectedTab, setSelectedTab] = useState('description');
+  const [product, setProduct] = useState<Product | null>(null);
 
-  const product = MOCK_PRODUCTS.find(p => p.id === id);
+  useEffect(() => {
+    const products = StorageService.getProducts();
+    const found = products.find(p => p.id === id);
+    setProduct(found || null);
+  }, [id]);
 
   if (!product) return <div className="text-center py-20 font-bold text-gray-500">Product not found.</div>;
 

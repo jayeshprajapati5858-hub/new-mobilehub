@@ -1,14 +1,18 @@
 
-import React, { useState } from 'react';
-import { MOCK_PRODUCTS } from '../mockData';
+import React, { useState, useEffect } from 'react';
 import { Category } from '../types';
 import { generateProductDescription } from '../geminiService';
+import { StorageService } from '../storage';
 
 const AdminProducts = () => {
-  const [products, setProducts] = useState(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    setProducts(StorageService.getProducts());
+  }, []);
 
   const handleAICompose = async () => {
     if (!editingProduct?.name) return alert('Enter a product name first');
@@ -19,9 +23,39 @@ const AdminProducts = () => {
   };
 
   const handleSave = () => {
-    // Logic to save/add product
+    if (!editingProduct?.name || !editingProduct?.price) return alert('Name and Price are required');
+    
+    const newProduct = {
+      ...editingProduct,
+      id: editingProduct.id || Date.now().toString(),
+      rating: editingProduct.rating || 0,
+      reviews: editingProduct.reviews || 0,
+      brand: editingProduct.brand || 'Generic',
+      image: editingProduct.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600'
+    };
+
+    StorageService.saveProduct(newProduct);
+    setProducts(StorageService.getProducts());
     setIsModalOpen(false);
     setEditingProduct(null);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      StorageService.deleteProduct(id);
+      setProducts(StorageService.getProducts());
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditingProduct({ ...editingProduct, image: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -71,7 +105,7 @@ const AdminProducts = () => {
                   <td className="px-6 py-4">
                     <div className="flex space-x-3 text-gray-400">
                       <button onClick={() => { setEditingProduct(p); setIsModalOpen(true); }} className="hover:text-blue-600"><i className="fas fa-edit"></i></button>
-                      <button className="hover:text-red-500"><i className="fas fa-trash-alt"></i></button>
+                      <button onClick={() => handleDelete(p.id)} className="hover:text-red-500"><i className="fas fa-trash-alt"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -151,12 +185,29 @@ const AdminProducts = () => {
                     ></textarea>
                   </div>
                   <div>
-                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Image URL</label>
-                     <input 
-                        className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl focus:outline-none text-[10px]"
-                        value={editingProduct?.image}
-                        onChange={e => setEditingProduct({...editingProduct, image: e.target.value})}
-                     />
+                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Product Image</label>
+                     <div className="mt-2 flex items-center space-x-4">
+                       {editingProduct?.image && (
+                         <img src={editingProduct.image} alt="Preview" className="w-16 h-16 rounded-xl object-cover border border-gray-200" />
+                       )}
+                       <div className="flex-1">
+                         <input 
+                           type="file"
+                           accept="image/*"
+                           onChange={handleImageUpload}
+                           className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition"
+                         />
+                         <div className="mt-2 flex items-center space-x-2">
+                           <span className="text-[10px] text-gray-400 font-bold uppercase">OR URL:</span>
+                           <input 
+                              className="flex-1 bg-gray-50 border border-gray-100 px-3 py-2 rounded-xl focus:outline-none text-[10px]"
+                              placeholder="https://..."
+                              value={editingProduct?.image || ''}
+                              onChange={e => setEditingProduct({...editingProduct, image: e.target.value})}
+                           />
+                         </div>
+                       </div>
+                     </div>
                   </div>
                 </div>
               </div>
