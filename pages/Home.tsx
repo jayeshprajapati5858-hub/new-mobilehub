@@ -16,32 +16,47 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, dark = false }) => {
   const discount = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
   return (
-    <div className={`group rounded-[2.5rem] overflow-hidden transition-all duration-500 transform hover:-translate-y-2 ${dark ? 'bg-white/10 backdrop-blur-xl border border-white/10' : 'bg-white border border-gray-100 shadow-sm hover:shadow-2xl shadow-blue-500/10'}`}>
-      <Link to={`/product/${product.id}`} className="block relative overflow-hidden aspect-[4/5] bg-gray-50 flex items-center justify-center">
-        <img src={product.image} alt={product.name} className="max-w-[80%] max-h-[80%] object-contain group-hover:scale-110 transition-transform duration-700" />
-        {discount > 0 && (
-          <span className="absolute top-4 left-4 bg-red-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-red-500/30">
-            {discount}% OFF
-          </span>
-        )}
+    <div className={`group relative rounded-2xl border transition-shadow hover:shadow-lg ${dark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'} p-4`}>
+      <Link to={`/product/${product.id}`}>
+        <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center">
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            className="max-w-[80%] max-h-[80%] object-contain p-4 transition-transform group-hover:scale-105"
+          />
+          {discount > 0 && (
+            <span className="absolute left-2 top-2 rounded-full bg-red-500 px-2 py-1 text-[10px] font-bold text-white uppercase tracking-widest shadow-sm">
+              {discount}% OFF
+            </span>
+          )}
+        </div>
       </Link>
-      <div className="p-6 space-y-3">
-        <div className={`text-[10px] font-black uppercase tracking-[0.2em] ${dark ? 'text-blue-300' : 'text-blue-600'}`}>{product.category}</div>
-        <Link to={`/product/${product.id}`} className={`font-bold block truncate text-lg group-hover:text-blue-600 transition-colors ${dark ? 'text-white' : 'text-gray-900'}`}>
-          {product.name}
+      
+      <div className="mt-4 space-y-2">
+        <p className={`text-[10px] font-bold uppercase tracking-widest ${dark ? 'text-blue-400' : 'text-blue-600'}`}>
+          {product.category}
+        </p>
+        <Link to={`/product/${product.id}`}>
+          <h3 className={`line-clamp-1 font-bold text-lg transition-colors ${dark ? 'text-white group-hover:text-blue-400' : 'text-gray-900 group-hover:text-blue-600'}`}>
+            {product.name}
+          </h3>
         </Link>
         <div className="flex items-center justify-between pt-2">
           <div className="flex flex-col">
-            <span className={`text-xl font-black ${dark ? 'text-white' : 'text-gray-900'}`}>₹{product.price.toLocaleString()}</span>
+            <span className={`text-xl font-black ${dark ? 'text-white' : 'text-gray-900'}`}>
+              ₹{product.price.toLocaleString()}
+            </span>
             {product.originalPrice && (
-              <span className={`text-xs line-through font-medium ${dark ? 'text-white/40' : 'text-gray-400'}`}>₹{product.originalPrice.toLocaleString()}</span>
+              <span className={`text-xs line-through font-medium ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
+                ₹{product.originalPrice.toLocaleString()}
+              </span>
             )}
           </div>
           <button 
-            onClick={() => addToCart(product)}
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 ${dark ? 'bg-white text-blue-600 hover:bg-blue-50' : 'bg-gray-900 text-white hover:bg-blue-600 shadow-xl shadow-gray-200'}`}
+            onClick={(e) => { e.preventDefault(); addToCart(product); }}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95 ${dark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-gray-900 text-white hover:bg-blue-600 shadow-md'}`}
           >
-            <i className="fas fa-plus"></i>
+            <i className="fas fa-shopping-cart text-sm"></i>
           </button>
         </div>
       </div>

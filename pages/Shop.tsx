@@ -9,36 +9,51 @@ import { StorageService } from '../storage';
 
 // Using React.FC to properly handle special props like 'key' in lists and resolve TS errors
 const ProductGridItem: React.FC<{ product: any }> = ({ product }) => {
-  // Fixed: Changed useCart to useGlobal
   const { addToCart } = useGlobal();
+  const discount = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg transition group">
-      <Link to={`/product/${product.id}`} className="block aspect-square overflow-hidden relative">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
-        <div className="absolute top-2 right-2 flex flex-col space-y-2 translate-x-12 group-hover:translate-x-0 transition duration-300">
-           <button className="w-8 h-8 rounded-full bg-white text-gray-400 hover:text-red-500 shadow-md flex items-center justify-center transition">
-             <i className="far fa-heart"></i>
-           </button>
+    <div className="group relative rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg border-gray-100">
+      <Link to={`/product/${product.id}`}>
+        <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center">
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            className="max-w-[80%] max-h-[80%] object-contain p-4 transition-transform group-hover:scale-105" 
+          />
+          {discount > 0 && (
+            <span className="absolute left-2 top-2 rounded-full bg-red-500 px-2 py-1 text-[10px] font-bold text-white uppercase tracking-widest shadow-sm">
+              {discount}% OFF
+            </span>
+          )}
         </div>
       </Link>
-      <div className="p-4 space-y-1">
-        <div className="text-[10px] text-gray-400 font-bold uppercase">{product.brand}</div>
-        <Link to={`/product/${product.id}`} className="font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600">
-          {product.name}
+      
+      <div className="mt-4 space-y-2">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600">
+          {product.category}
+        </p>
+        <Link to={`/product/${product.id}`}>
+          <h3 className="line-clamp-1 font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
+            {product.name}
+          </h3>
         </Link>
-        <div className="flex items-center space-x-1 text-yellow-400 text-[10px] mb-1">
-          {[...Array(5)].map((_, i) => (
-            <i key={i} className={`fas fa-star ${i >= Math.floor(product.rating) ? 'text-gray-200' : ''}`}></i>
-          ))}
-          <span className="text-gray-400 font-medium ml-1">({product.reviews})</span>
-        </div>
         <div className="flex items-center justify-between pt-2">
-          <span className="text-lg font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-black text-gray-900">
+              ₹{product.price.toLocaleString()}
+            </span>
+            {product.originalPrice && (
+              <span className="text-xs line-through font-medium text-gray-400">
+                ₹{product.originalPrice.toLocaleString()}
+              </span>
+            )}
+          </div>
           <button 
             onClick={(e) => { e.preventDefault(); addToCart(product); }}
-            className="w-10 h-10 rounded-xl gradient-bg text-white shadow-lg shadow-blue-500/20 hover:scale-105 transition active:scale-95 flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center transition-all active:scale-95 hover:bg-blue-600 shadow-md"
           >
-            <i className="fas fa-plus"></i>
+            <i className="fas fa-shopping-cart text-sm"></i>
           </button>
         </div>
       </div>
