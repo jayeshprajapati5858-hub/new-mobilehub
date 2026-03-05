@@ -184,30 +184,6 @@ const Home = () => {
         </div>
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px]"></div>
       </section>
-
-      {/* Customer Trust */}
-      <section className="py-12 bg-white rounded-[4rem] border border-gray-100">
-        <div className="max-w-4xl mx-auto text-center space-y-12 px-6">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Village Favorite</h2>
-            <p className="text-gray-400 font-medium italic">"Real stories from our local neighbors and happy tech owners."</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="flex flex-col items-center space-y-4">
-                <div className="w-16 h-16 rounded-3xl overflow-hidden shadow-xl ring-4 ring-gray-50">
-                  <img src={`https://images.unsplash.com/photo-${1500000000000 + i * 10000}?auto=format&fit=crop&q=80&w=100`} className="w-full h-full object-cover" alt="" />
-                </div>
-                <div className="flex text-amber-400 text-[8px] space-x-1">
-                  {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
-                </div>
-                <p className="text-gray-600 text-xs leading-relaxed font-medium">"Amazing service, got my iPhone delivered right to my farm gate within hours!"</p>
-                <span className="font-black text-gray-900 text-[10px] uppercase tracking-widest">Karan S.</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
